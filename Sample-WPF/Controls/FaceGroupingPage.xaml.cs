@@ -44,6 +44,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using ClientContract = Microsoft.ProjectOxford.Face.Contract;
+using System.Windows.Automation.Peers;
 
 namespace Microsoft.ProjectOxford.Face.Controls
 {
@@ -138,157 +139,12 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Event arguments</param>
-        private async void Grouping_Click(object sender, RoutedEventArgs e)
+        private void Capture_CLick(object sender, RoutedEventArgs e)
         {
-            // Show folder picker
-            System.Windows.Forms.FolderBrowserDialog dlg = new System.Windows.Forms.FolderBrowserDialog();
-            var result = dlg.ShowDialog();
-
-            // Set the suggestion count is intent to minimum the data preparation step only,
-            // it's not corresponding to service side constraint
-            const int SuggestionCount = 10;
-
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                // User picked one folder
-                List<Task> tasks = new List<Task>();
-                int processCount = 0;
-                bool forceContinue = false;
-
-                // Clear previous grouping result
-                GroupedFaces.Clear();
-                Faces.Clear();
-
-                MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
-                string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-
-                var faceServiceClient = new FaceServiceClient(subscriptionKey);
-
-                MainWindow.Log("Request: Preparing faces for grouping, detecting faces in chosen folder.");
+                //LockWorkStation();
+                WpfWebCameraDemo.MainWindow Test = new WpfWebCameraDemo.MainWindow();
+                Test.Show();   
                 
-                var imageList =
-                    new ConcurrentBag<string>(
-                        Directory.EnumerateFiles(dlg.SelectedPath, "*.*", SearchOption.AllDirectories)
-                            .Where(s => s.ToLower().EndsWith(".jpg") || s.ToLower().EndsWith(".png") || s.ToLower().EndsWith(".bmp") || s.ToLower().EndsWith(".gif")));
-
-                string img;
-                while (imageList.TryTake(out img))
-                {
-                    tasks.Add(Task.Factory.StartNew(
-                        async (obj) =>
-                        {
-                            var imgPath = obj as string;                            
-                            // Detect faces in image
-                            using (var fStream = File.OpenRead(imgPath))
-                            {
-                                try
-                                {
-                                    var faces = await faceServiceClient.DetectAsync(fStream);
-                                    return new Tuple<string, ClientContract.Face[]>(imgPath, faces);
-                                }
-                                catch (FaceAPIException ex)
-                                {
-                                    // if operation conflict, retry.
-                                    if (ex.ErrorCode.Equals("ConcurrentOperationConflict"))
-                                    {
-                                        imageList.Add(imgPath);
-                                        return null;
-                                    }
-                                    // Here we simply ignore all detection failure in this sample
-                                    // You may handle these exceptions by check the Error.Error.Code and Error.Message property for ClientException object
-                                    return new Tuple<string, ClientContract.Face[]>(imgPath, null);
-                                }
-                            }
-                        },
-                        img).Unwrap().ContinueWith((detectTask) =>
-                        {
-                            // Update detected faces on UI
-                            var res = detectTask?.Result;
-                            if (res?.Item2 == null)
-                            {
-                                return;
-                            }
-
-                            foreach (var f in res.Item2)
-                            {
-                                this.Dispatcher.Invoke(
-                                    new Action<ObservableCollection<Face>, string, ClientContract.Face>(UIHelper.UpdateFace),
-                                    Faces,
-                                    res.Item1,
-                                    f);
-                            }
-                        }));
-                    if (processCount >= SuggestionCount && !forceContinue)
-                    {
-                        var continueProcess = System.Windows.Forms.MessageBox.Show("Found many images under chosen folder, may take long time if proceed. Continue?", "Warning", System.Windows.Forms.MessageBoxButtons.YesNo);
-                        if (continueProcess == System.Windows.Forms.DialogResult.Yes)
-                        {
-                            forceContinue = true;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    if (tasks.Count >= _maxConcurrentProcesses || imageList.IsEmpty)
-                    {
-                        await Task.WhenAll(tasks);
-                        tasks.Clear();
-                    }
-                }
-                
-                MainWindow.Log("Response: Success. Total {0} faces are detected.", Faces.Count);
-
-                try
-                {
-                   MainWindow.Log("Request: Grouping {0} faces.", Faces.Count);
-
-                    // Call grouping, the grouping result is a group collection, each group contains similar faces
-                    var groupRes = await faceServiceClient.GroupAsync(Faces.Select(f => Guid.Parse(f.FaceId)).ToArray());
-
-                    // Update grouping results for rendering
-                    foreach (var g in groupRes.Groups)
-                    {
-                        var gg = new GroupingResult()
-                        {
-                            Faces = new ObservableCollection<Face>(),
-                            IsMessyGroup = false,
-                        };
-
-                        foreach (var fr in g)
-                        {
-                            gg.Faces.Add(Faces.First(f => f.FaceId == fr.ToString()));
-                        }
-
-                        GroupedFaces.Add(gg);
-                    }
-
-                    // MessyGroup contains all faces which are not similar to any other faces.
-                    // Take an extreme case for example:
-                    // On grouping faces which are not similar to any other faces, the grouping result will contains only one messy group
-                    if (groupRes.MessyGroup.Length > 0)
-                    {
-                        var messyGroup = new GroupingResult()
-                        {
-                            Faces = new ObservableCollection<Face>(),
-                            IsMessyGroup = true
-                        };
-                        foreach (var messy in groupRes.MessyGroup)
-                        {
-                            messyGroup.Faces.Add(Faces.First(f => f.FaceId == messy.ToString()));
-                        }
-
-                        GroupedFaces.Add(messyGroup);
-                    }
-
-                    MainWindow.Log("Response: Success. {0} faces are grouped into {1} groups.", Faces.Count, GroupedFaces.Count);
-                }
-                catch (FaceAPIException ex)
-                {
-                    MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
-                }
-            }
-            GC.Collect();
         }
 
         #endregion Methods
@@ -369,5 +225,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
         }
 
         #endregion Nested Types
+
+        
+      
+        
     }
 }

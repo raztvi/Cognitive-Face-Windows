@@ -39,6 +39,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.ProjectOxford.Face.Controls
 {
@@ -73,6 +74,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// Image used for rendering and detecting
         /// </summary>
         private ImageSource _selectedFile;
+
+        [DllImport("user32.dll")]
+        public static extern void LockWorkStation();
 
         #endregion Fields
 
@@ -229,7 +233,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
-                        var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                        var faceServiceClient = new FaceServiceClient("b5d6a408319544a98976f014025d23d4","https://westcentralus.api.cognitive.microsoft.com/face/v1.0");
                         ProjectOxford.Face.Contract.Face[] faces = await faceServiceClient.DetectAsync(fStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair, FaceAttributeType.Emotion, FaceAttributeType.Hair, FaceAttributeType.Makeup, FaceAttributeType.Occlusion, FaceAttributeType.Accessories, FaceAttributeType.Noise, FaceAttributeType.Exposure, FaceAttributeType.Blur });
                         MainWindow.Log("Response: Success. Detected {0} face(s) in {1}", faces.Length, pickedImagePath);
 
@@ -372,5 +376,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
         }
 
         #endregion Methods
+
+        
     }
 }

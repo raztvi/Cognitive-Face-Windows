@@ -46,6 +46,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Drawing;
+using System.Drawing.Imaging;
+
 
 using ClientContract = Microsoft.ProjectOxford.Face.Contract;
 
@@ -297,7 +300,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
-                        var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                        var faceServiceClient = new FaceServiceClient("b5d6a408319544a98976f014025d23d4","https://westcentralus.api.cognitive.microsoft.com/face/v1.0");
                         var faces = await faceServiceClient.DetectAsync(fileStream);
 
                         // Handle REST API calling error
@@ -331,25 +334,26 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// Pick image for detection, get detection result and put detection results into RightResultCollection 
         /// </summary>
         /// <param name="sender">Event sender</param>
-        /// <param name="e">Event argument</param>
+        /// <param name="e">Event argument</param> asta am modificat
         private async void RightImagePicker_Click(object sender, RoutedEventArgs e)
         {
             // Show image picker, show jpg type files only
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+           /* Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.DefaultExt = ".jpg";
             dlg.Filter = "Image files(*.jpg, *.png, *.bmp, *.gif) | *.jpg; *.png; *.bmp; *.gif";
             var result = dlg.ShowDialog();
-
+            
             if (result.HasValue && result.Value)
-            {
+            *///{
                 FaceVerifyResult = string.Empty;
 
-                // User already picked one image
-                var pickedImagePath = dlg.FileName;
+            // User already picked one image
+                 var fullPath = Path.GetFullPath("\\poza\\77.bmp");
+            var pickedImagePath = fullPath;
                 var renderingImage = UIHelper.LoadImageAppliedOrientation(pickedImagePath);
                 var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
                 RightImageDisplay.Source = renderingImage;
-
+               
                 // Clear last time detection results
                 RightResultCollection.Clear();
                 FaceVerifyButton.IsEnabled = (LeftResultCollection.Count != 0 && RightResultCollection.Count != 0);
@@ -365,7 +369,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
-                        var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                        var faceServiceClient = new FaceServiceClient("b5d6a408319544a98976f014025d23d4","https://westcentralus.api.cognitive.microsoft.com/face/v1.0");
 
                         var faces = await faceServiceClient.DetectAsync(fileStream);
 
@@ -392,7 +396,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         return;
                     }
                 }
-            }
+            //}
             GC.Collect();
         }
 
@@ -419,7 +423,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                     string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
-                    var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                    var faceServiceClient = new FaceServiceClient("b5d6a408319544a98976f014025d23d4","https://westcentralus.api.cognitive.microsoft.com/face/v1.0");
                     var res = await faceServiceClient.VerifyAsync(Guid.Parse(faceId1), Guid.Parse(faceId2));
 
                     // Verification result contains IsIdentical (true or false) and Confidence (in range 0.0 ~ 1.0),
@@ -440,7 +444,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             }
             GC.Collect();
         }
-        
+        /*
         /// <summary>
         /// Pick image folder to detect faces and using these faces to create the person database
         /// </summary>
@@ -453,7 +457,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
             string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
-            var faceServiceClient = new FaceServiceClient(subscriptionKey);
+            var faceServiceClient = new FaceServiceClient("b5d6a408319544a98976f014025d23d4","https://westcentralus.api.cognitive.microsoft.com/face/v1.0");
             
             // Test whether the group already exists
             try
@@ -682,7 +686,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
-                        var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                        var faceServiceClient = new FaceServiceClient("b5d6a408319544a98976f014025d23d4","https://westcentralus.api.cognitive.microsoft.com/face/v1.0");
 
                         var faces = await faceServiceClient.DetectAsync(fileStream);
 
@@ -735,7 +739,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                     string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
-                    var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                    var faceServiceClient = new FaceServiceClient("b5d6a408319544a98976f014025d23d4","https://westcentralus.api.cognitive.microsoft.com/face/v1.0");
                     var res = await faceServiceClient.VerifyAsync(Guid.Parse(faceId), GroupName, Guid.Parse(Person.PersonId));
 
                     // Verification result contains IsIdentical (true or false) and Confidence (in range 0.0 ~ 1.0),
@@ -756,7 +760,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             }
             GC.Collect();
         }
-
+        */
         #endregion Methods
     }
 

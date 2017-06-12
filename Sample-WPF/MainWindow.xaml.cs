@@ -76,26 +76,19 @@ namespace Microsoft.ProjectOxford.Face
                     PageClass = typeof(FaceDetectionPage),
                     Title = "Face Detection",
                 },
-                new Scenario()
-                {
-                    PageClass = typeof(FaceFindSimilarPage),
-                    Title = "Face Find Similar",
-                },
-                new Scenario()
-                {
-                    PageClass = typeof(FaceGroupingPage),
-                    Title = "Face Grouping",
-                },
-                new Scenario()
-                {
-                    PageClass = typeof(FaceIdentificationPage),
-                    Title = "Face Identification",
-                },
+               
+      
                 new Scenario()
                 {
                     PageClass = typeof(FaceVerificationPage),
                     Title = "Face Verification",
                 },
+
+                new Scenario()
+                {
+                    PageClass = typeof(FaceGroupingPage),
+                    Title = "Lock",
+                }
             };
         }
 

@@ -95,14 +95,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Controls\FaceIdentificationPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\FaceFindSimilarPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Controls\FaceGroupingPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -124,12 +116,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\Face.cs" />
-    <Compile Include="Controls\FaceIdentificationPage.xaml.cs">
-      <DependentUpon>FaceIdentificationPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\FaceFindSimilarPage.xaml.cs">
-      <DependentUpon>FaceFindSimilarPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\FaceGroupingPage.xaml.cs">
       <DependentUpon>FaceGroupingPage.xaml</DependentUpon>
     </Compile>
@@ -176,6 +162,10 @@
     <Resource Include="Assets\Microsoft-logo_rgb_c-gray.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\WebCameraDemo\WebCameraDemo.csproj">
+      <Project>{c7f376ca-8170-4335-87af-f5f3fd2bcdac}</Project>
+      <Name>WebCameraDemo</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cognitive-Common-Windows\SampleUserControlLibrary\SampleUserControlLibrary.csproj">
       <Project>{735929f0-f8f1-4d93-b027-5d034fa7892b}</Project>
       <Name>SampleUserControlLibrary</Name>
